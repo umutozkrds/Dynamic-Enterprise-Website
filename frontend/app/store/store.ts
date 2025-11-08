@@ -3,7 +3,6 @@ import counterReducer from "./slices/counterSlice";
 import authReducer from "./slices/authSlice";
 import sliderReducer from "./slices/sliderSlice";
 import categoryReducer from "./slices/categorySlice";
-import subCategoryReducer from "./slices/subCategorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +10,6 @@ export const store = configureStore({
     auth: authReducer,
     slider: sliderReducer,
     category: categoryReducer,
-    subCategory: subCategoryReducer,
   },
 });
 

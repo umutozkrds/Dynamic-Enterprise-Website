@@ -1,8 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import type { Category } from "../../interfaces/category";
-import type { SubCategory } from "../../interfaces/subCategory";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchSubCategories } from "../../restapi/subCategory";
 import styles from "./navbar.module.css";
 
 interface CategoryListProps {
@@ -22,18 +19,9 @@ export default function CategoryList({
 }: CategoryListProps) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
-  const dispatch = useAppDispatch();
-
-  const { subCategories, loading: subCategoriesLoading } = useAppSelector(
-    (state) => state.subCategory
-  );
 
   // Suppress unused variable warning - will be used when adding subcategory navigation
   void onCategoryClick;
-
-  useEffect(() => {
-    dispatch(fetchSubCategories());
-  }, [dispatch]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -44,16 +32,20 @@ export default function CategoryList({
     };
   }, [closeTimeout]);
 
-  // Group subcategories by category_id
-  const subCategoriesByCategory = useMemo(() => {
-    return subCategories.reduce((acc, subCategory) => {
-      if (!acc[subCategory.category_id]) {
-        acc[subCategory.category_id] = [];
-      }
-      acc[subCategory.category_id].push(subCategory);
-      return acc;
-    }, {} as Record<number, SubCategory[]>);
-  }, [subCategories]);
+  // Group categories by parent_id (parent categories and their subcategories)
+  const categoryHierarchy = useMemo(() => {
+    const parentCategories = categories.filter((cat) => cat.parent_id === null);
+    const childCategories = categories.filter((cat) => cat.parent_id !== null);
+
+    const hierarchy = parentCategories.map((parent) => ({
+      ...parent,
+      subcategories: childCategories.filter(
+        (child) => child.parent_id === parent.id
+      ),
+    }));
+
+    return hierarchy;
+  }, [categories]);
 
   if (loading) {
     return (
@@ -108,7 +100,7 @@ export default function CategoryList({
 
   return (
     <ul className={listClassName}>
-      {categories.map((category) => (
+      {categoryHierarchy.map((category) => (
         <li key={category.id} className={itemClassName}>
           <div
             className={styles.categoryDropdownWrapper}
@@ -168,28 +160,21 @@ export default function CategoryList({
                 }
               >
                 <div className={styles.dropdownContent}>
-                  {subCategoriesLoading ? (
-                    <div className={styles.dropdownLoading}>
-                      <div className={styles.loadingSkeleton}></div>
-                      <div className={styles.loadingSkeleton}></div>
-                    </div>
-                  ) : subCategoriesByCategory[category.id]?.length > 0 ? (
+                  {category.subcategories.length > 0 ? (
                     <ul className={styles.subCategoryList}>
-                      {subCategoriesByCategory[category.id].map(
-                        (subCategory) => (
-                          <li
-                            key={subCategory.id}
-                            className={styles.subCategoryItem}
+                      {category.subcategories.map((subCategory) => (
+                        <li
+                          key={subCategory.id}
+                          className={styles.subCategoryItem}
+                        >
+                          <a
+                            href={`/category/${category.slug}/${subCategory.slug}`}
+                            className={styles.subCategoryLink}
                           >
-                            <a
-                              href={`/category/${category.slug}/${subCategory.slug}`}
-                              className={styles.subCategoryLink}
-                            >
-                              {subCategory.name}
-                            </a>
-                          </li>
-                        )
-                      )}
+                            {subCategory.name}
+                          </a>
+                        </li>
+                      ))}
                     </ul>
                   ) : (
                     <p className={styles.dropdownPlaceholder}>
