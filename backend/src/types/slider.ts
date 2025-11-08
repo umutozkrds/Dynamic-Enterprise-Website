@@ -5,6 +5,7 @@ export interface Slider {
   post_id: number;
   category_id: number;
   image_url: string;
+  order: number;
   created_at: Date;
   updated_at: Date;
 }

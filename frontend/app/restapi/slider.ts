@@ -68,3 +68,18 @@ export const updateSlider = createAsyncThunk(
     }
   }
 );
+
+export const reorderSliders = createAsyncThunk(
+  "slider/reorderSliders",
+  async (items: { id: number; order: number }[], { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/reorder`, { items });
+      return response.data;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to reorder sliders");
+      }
+      return rejectWithValue("Failed to reorder sliders");
+    }
+  }
+);

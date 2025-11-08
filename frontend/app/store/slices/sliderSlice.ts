@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSlider, deleteSlider, fetchSliders, updateSlider } from "../../restapi/slider";
+import { createSlider, deleteSlider, fetchSliders, updateSlider, reorderSliders } from "../../restapi/slider";
 import type { Slider } from "../../interfaces/slider";
 
 interface SliderState {
@@ -36,6 +36,9 @@ const sliderSlice = createSlice({
             ? state.sliders.length - 1
             : state.currentSlideIndex - 1;
       }
+    },
+    updateSliderOrder: (state, action: PayloadAction<Slider[]>) => {
+      state.sliders = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -92,10 +95,22 @@ const sliderSlice = createSlice({
       .addCase(deleteSlider.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(reorderSliders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(reorderSliders.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(reorderSliders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { setCurrentSlideIndex, nextSlide, previousSlide } =
+export const { setCurrentSlideIndex, nextSlide, previousSlide, updateSliderOrder } =
   sliderSlice.actions;
 export default sliderSlice.reducer;

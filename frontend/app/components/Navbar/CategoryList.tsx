@@ -34,14 +34,16 @@ export default function CategoryList({
 
   // Group categories by parent_id (parent categories and their subcategories)
   const categoryHierarchy = useMemo(() => {
-    const parentCategories = categories.filter((cat) => cat.parent_id === null);
+    const parentCategories = categories
+      .filter((cat) => cat.parent_id === null)
+      .sort((a, b) => a.order - b.order);
     const childCategories = categories.filter((cat) => cat.parent_id !== null);
 
     const hierarchy = parentCategories.map((parent) => ({
       ...parent,
-      subcategories: childCategories.filter(
-        (child) => child.parent_id === parent.id
-      ),
+      subcategories: childCategories
+        .filter((child) => child.parent_id === parent.id)
+        .sort((a, b) => a.order - b.order),
     }));
 
     return hierarchy;

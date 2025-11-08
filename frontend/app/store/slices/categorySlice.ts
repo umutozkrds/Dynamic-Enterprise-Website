@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fetchCategories } from "../../restapi/category";
+import { fetchCategories, bulkReorderCategories } from "../../restapi/category";
 import type { Category } from "../../interfaces/category";
 
 interface CategoryState {
@@ -17,7 +17,11 @@ const initialState: CategoryState = {
 const categorySlice = createSlice({
   name: "category",
   initialState,
-  reducers: {},
+  reducers: {
+    updateCategoryOrder: (state, action: PayloadAction<Category[]>) => {
+      state.categories = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCategories.pending, (state) => {
@@ -35,9 +39,22 @@ const categorySlice = createSlice({
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(bulkReorderCategories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(bulkReorderCategories.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(bulkReorderCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
+export const { updateCategoryOrder } = categorySlice.actions;
 export default categorySlice.reducer;
 

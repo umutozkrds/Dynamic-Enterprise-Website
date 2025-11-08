@@ -30,8 +30,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.log(hash);
       console.log("=================================\n");
       console.log("SQL Insert Example:");
-      console.log(`INSERT INTO users (username, email, password, name, surname, role)`);
-      console.log(`VALUES ('admin', 'admin@example.com', '${hash}', 'Admin', 'User', 'admin');`);
+      console.log(`INSERT INTO users (username, email, password, name, role)`);
+      console.log(`VALUES ('admin', 'admin@example.com', '${hash}', 'Admin', 'admin');`);
       console.log("\n");
     })
     .catch((error) => {

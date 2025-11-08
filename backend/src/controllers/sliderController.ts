@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { createSliderService, deleteSliderService, getAllSlidersService, updateSliderService } from "../services/sliderServices.js";
+import { createSliderService, deleteSliderService, getAllSlidersService, updateSliderService, reorderSlidersService } from "../services/sliderServices.js";
 import type { Slider } from "../types/slider.js";
 
 export const getAllSliders = async (req: Request, res: Response): Promise<void> => {
@@ -46,5 +46,26 @@ export const updateSlider = async (req: Request, res: Response): Promise<void> =
   } catch (error: any) {
     console.error("Error updating slider:", error.message);
     res.status(500).json({ message: "Failed to update slider" });
+  }
+};
+
+export const reorderSliders = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { items } = req.body as { items: { id: number; order: number }[] };
+    
+    if (!items || !Array.isArray(items)) {
+      res.status(400).json({ message: "Invalid request: items array is required" });
+      return;
+    }
+    
+    const result = await reorderSlidersService(items);
+    res.status(200).json({ 
+      message: "Sliders reordered successfully", 
+      success: result.success,
+      updated: result.updated
+    });
+  } catch (error: any) {
+    console.error("Error reordering sliders:", error.message);
+    res.status(500).json({ message: "Failed to reorder sliders", error: error.message });
   }
 };

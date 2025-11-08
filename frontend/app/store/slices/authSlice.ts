@@ -5,7 +5,6 @@ import { getInitialAuthState, loginUser, logoutUser } from "../../restapi/auth";
 export interface User {
   id: string;
   name: string;
-  surname: string;
   email: string;
   role: string;
 }

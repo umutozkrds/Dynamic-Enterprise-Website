@@ -26,14 +26,13 @@ export default function UserActions({
   if (user) {
     const userAvatar = (
       <span className={styles.userAvatar}>
-        {user.name.charAt(0).toUpperCase()}
-        {user.surname.charAt(0).toUpperCase()}
+        {user.name?.charAt(0).toUpperCase()}
       </span>
     );
 
     const userName = (
       <span className={styles.userName}>
-        {user.name} {user.surname}
+        {user.name}
       </span>
     );
 

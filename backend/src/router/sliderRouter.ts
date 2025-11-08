@@ -1,5 +1,5 @@
 import express from "express";
-import { createSlider, deleteSlider, getAllSliders, updateSlider } from "../controllers/sliderController.js";
+import { createSlider, deleteSlider, getAllSliders, updateSlider, reorderSliders } from "../controllers/sliderController.js";
 
 const router = express.Router();
 
@@ -8,6 +8,7 @@ router.get("/", getAllSliders);
 router.post("/", createSlider);
 router.delete("/:id", deleteSlider);
 router.put("/:id", updateSlider);
+router.post("/reorder", reorderSliders);
 
 export default router;
 

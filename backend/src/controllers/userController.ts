@@ -22,7 +22,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       user: {
         id: user.id,
         name: user.name,
-        surname: user.surname,
         email: user.email,
         role: user.role,
       },
